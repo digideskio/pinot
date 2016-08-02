@@ -30,6 +30,7 @@ public abstract class FieldSpec {
   private static final Float DEFAULT_DIM_NULL_VALUE_OF_FLOAT = Float.NEGATIVE_INFINITY;
   private static final Double DEFAULT_DIM_NULL_VALUE_OF_DOUBLE = Double.NEGATIVE_INFINITY;
 
+  private static final Short DEFAULT_METRIC_NULL_VALUE_OF_SHORT = 0;
   private static final Integer DEFAULT_METRIC_NULL_VALUE_OF_INT = 0;
   private static final Long DEFAULT_METRIC_NULL_VALUE_OF_LONG = 0L;
   private static final Float DEFAULT_METRIC_NULL_VALUE_OF_FLOAT = 0.0F;
@@ -146,9 +147,18 @@ public abstract class FieldSpec {
    *
    * @param value string format of the default null value.
    */
-  protected void defaultNullValueFromString(String value) {
+  private void defaultNullValueFromString(String value) {
     DataType dataType = getDataType();
     switch (dataType) {
+      case BOOLEAN:
+        String booleanValue = value.toLowerCase().trim();
+        Preconditions.checkArgument(booleanValue.equals("true") || booleanValue.equals("false"),
+            "Invalid boolean type default null value: {}", value);
+        _defaultNullValue = booleanValue;
+        return;
+      case SHORT:
+        _defaultNullValue = Short.valueOf(value);
+        return;
       case INT:
         _defaultNullValue = Integer.valueOf(value);
         return;
@@ -162,7 +172,6 @@ public abstract class FieldSpec {
         _defaultNullValue = Double.valueOf(value);
         return;
       case STRING:
-      case BOOLEAN:
         _defaultNullValue = value;
         return;
       default:
@@ -185,6 +194,8 @@ public abstract class FieldSpec {
     switch (_fieldType) {
       case METRIC:
         switch (dataType) {
+          case SHORT:
+            return DEFAULT_METRIC_NULL_VALUE_OF_SHORT;
           case INT:
             return DEFAULT_METRIC_NULL_VALUE_OF_INT;
           case LONG:
@@ -249,7 +260,6 @@ public abstract class FieldSpec {
    *
    */
   public enum FieldType {
-    UNKNOWN,
     DIMENSION,
     METRIC,
     TIME
