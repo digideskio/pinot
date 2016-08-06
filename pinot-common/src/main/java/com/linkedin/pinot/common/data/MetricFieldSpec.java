@@ -17,6 +17,7 @@ package com.linkedin.pinot.common.data;
 
 public class MetricFieldSpec extends FieldSpec {
 
+  // Default constructor required by JSON de-serializer. DO NOT REMOVE.
   public MetricFieldSpec() {
     super();
     setFieldType(FieldType.METRIC);
